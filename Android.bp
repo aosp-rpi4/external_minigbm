@@ -69,7 +69,7 @@ filegroup {
     srcs: ["cros_gralloc/gralloc0/gralloc0.cc"],
 }
 
-generic_cflags = ["-DHAS_DMABUF_SYSTEM_HEAP"]
+generic_cflags = ["-DHAS_DMABUF_SYSTEM_HEAP", "-DDRV_VC4"]
 intel_cflags = [
     "-DDRV_I915",
     "-DDRV_XE",

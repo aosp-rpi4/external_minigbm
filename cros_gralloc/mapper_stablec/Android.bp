@@ -29,7 +29,8 @@ cc_library_shared {
     vintf_fragments: ["mapper.minigbm.xml"],
     shared_libs: [
         "android.hardware.graphics.allocator-V2-ndk",
-        "libminigbm_gralloc",
+        // RPi4: gbm_mesa backend (Mesa v3d) to match the AIDL allocator.
+        "libminigbm_gralloc_gbm_mesa",
     ],
     header_libs: [
         "libbase_headers",

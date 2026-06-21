@@ -38,7 +38,10 @@ cc_binary {
         "libgralloctypes",
         "libhidlbase",
         "liblog",
-        "libminigbm_gralloc",
+        // RPi4: route the AIDL (gralloc5) allocator to the gbm_mesa backend
+        // (Mesa v3d) instead of the generic minigbm backend, which can't bind a
+        // DRM node on RPi4. Pairs with mapper.minigbm (also swapped to gbm_mesa).
+        "libminigbm_gralloc_gbm_mesa",
         "libminigbm_gralloc4_utils",
     ],
     static_libs: [

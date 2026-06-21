@@ -28,6 +28,23 @@
 #include "drv_priv.h"
 #include "util.h"
 
+#ifdef DRV_EXTERNAL
+/* External (out-of-tree) backend, e.g. gbm_mesa. Provided by
+ * gbm_mesa_driver/gbm_mesa_driver.cpp, which returns &gbm_mesa_backend. */
+extern struct backend *init_external_backend(void);
+
+void drv_preload(bool load)
+{
+	(void)load;
+}
+
+static const struct backend *drv_get_backend(int fd)
+{
+	(void)fd;
+	return init_external_backend();
+}
+#else
+
 #ifdef DRV_AMDGPU
 extern const struct backend backend_amdgpu;
 #endif
@@ -114,6 +131,7 @@ static const struct backend *drv_get_backend(int fd)
 	drmFreeVersion(drm_version);
 	return NULL;
 }
+#endif // DRV_EXTERNAL
 
 struct driver *drv_create(int fd)
 {
@@ -679,6 +697,10 @@ int drv_bo_get_plane_fd(struct bo *bo, size_t plane)
 
 	if (bo->is_test_buffer)
 		return -EINVAL;
+
+	/* External backends (gbm_mesa) own their dmabuf fds; let them export. */
+	if (bo->drv->backend->bo_get_plane_fd)
+		return bo->drv->backend->bo_get_plane_fd(bo, plane);
 
 	ret = drmPrimeHandleToFD(bo->drv->fd, bo->handle.u32, DRM_CLOEXEC | DRM_RDWR, &fd);
 

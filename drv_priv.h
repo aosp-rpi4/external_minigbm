@@ -95,6 +95,10 @@ struct backend {
 	int (*bo_import)(struct bo *bo, struct drv_import_fd_data *data);
 	void *(*bo_map)(struct bo *bo, struct vma *vma, uint32_t map_flags);
 	int (*bo_unmap)(struct bo *bo, struct vma *vma);
+	/* Optional: backends (e.g. gbm_mesa) that allocate on a separate device and
+	 * hold their own dmabuf fds must export them here; the generic
+	 * drmPrimeHandleToFD(drv->fd, bo->handle) path does not apply to them. */
+	int (*bo_get_plane_fd)(struct bo *bo, size_t plane);
 	int (*bo_invalidate)(struct bo *bo, struct mapping *mapping);
 	int (*bo_flush)(struct bo *bo, struct mapping *mapping);
 	void (*resolve_format_and_use_flags)(struct driver *drv, uint32_t format,
