@@ -48,3 +48,22 @@ cc_library_shared {
     defaults: ["minigbm_cros_gralloc0_defaults"],
     shared_libs: ["libminigbm_gralloc_gbm_mesa"],
 }
+
+// libgbm_mesa_wrapper — the runtime shim the gbm_mesa backend dlopen()s
+// (gbm_mesa_internals.cpp: GBM_WRAPPER_NAME = "libgbm_mesa_wrapper.so"). Converted
+// from the legacy gbm_mesa_driver/Android.mk to Blueprint so it isn't caught by
+// Soong's external/ Android.mk denylist — no build/soong edit and no allowlist
+// entry needed for minigbm. Its dep libgbm_mesa is a Soong cc_library (vendor:true)
+// in external/mesa3d-v3d, so this resolves cleanly. Pin C to gnu17 for the same
+// reason as libgbm_mesa (Mesa 22 predates C23's builtin unreachable()).
+cc_library_shared {
+    name: "libgbm_mesa_wrapper",
+    vendor: true,
+    c_std: "gnu17",
+    srcs: ["gbm_mesa_wrapper.c"],
+    shared_libs: [
+        "libdrm",
+        "libgbm_mesa",
+        "liblog",
+    ],
+}
